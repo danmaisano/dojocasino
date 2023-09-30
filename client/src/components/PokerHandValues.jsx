@@ -1,5 +1,5 @@
 
-class HandValue {
+class PokerHandValue {
     constructor(hand) {
       this.hand = hand;
     }
@@ -140,4 +140,4 @@ class HandValue {
     }
   }
   
-export default HandValue
+export default PokerHandValue

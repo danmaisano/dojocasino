@@ -16,7 +16,8 @@ const Login = (props) => {
       .then((res) => {
         setPlayer(res.data);
         Cookies.set("player", JSON.stringify(res.data), { expires: 30 });
-        navigate("/play");
+        Cookies.set("userToken", JSON.stringify(res.data.token), { expires: 30 }); 
+        navigate("/home");
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.errors) {

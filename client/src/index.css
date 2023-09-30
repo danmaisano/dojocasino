@@ -13,6 +13,16 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+.button-container {
+  display: flex;
+}
+
+.placeholder {
+  width: 100px;  /* Adjust according to the size of your button */
+  margin-left: 10px;
+  background-color:#242424;
+}
+
 
 a {
   font-weight: 500;
@@ -68,6 +78,35 @@ button:focus-visible {
   }
 }
 
+.dealer-hand {
+  margin-bottom: 5%;
+}
+
+.player-hand {
+  margin-top: 5%;
+}
+
+.dealer-title{
+  background-color: #ffffff;
+  width: 400px;
+  margin: 0 auto;
+  border-radius: 5%;
+  font-size: x-large;
+  margin-bottom: 10px;
+  margin-top: -5%;
+  color: #000000;
+}
+.player-title{
+  background-color: #ffffff;
+  width: 200px;
+  margin: 0 auto;
+  border-radius: 5%;
+  font-size: x-large;
+  margin-bottom: -4%;
+  margin-top: 5%;
+  color: #000000;
+}
+
 .card-container {
   display: flex;
   flex-wrap: wrap;
@@ -80,12 +119,12 @@ button:focus-visible {
 }
 
 .card {
-  height: 300px;
-  width: 200px;
+  height: 220px;
+  width: 160px;
   text-align: center;
   border: 2px solid black;
   font-weight: 700;
-  font-size: 25px;
+  font-size: 20px;
   margin: 0 5px;
   box-shadow: 1px 1px black;
 }
@@ -182,6 +221,19 @@ button:focus-visible {
   align-self: center;
 }
 
+button:disabled {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events:none;
+}
+
+.bet-amount{
+  width: 40%;
+  margin: 0 auto;
+  font-size: larger;
+  text-align: center;
+}
+
 .wrapper {
   width: 80vw;
   height: 60vh; /* Viewport height: this will make your wrapper take up the entire height of the viewport */
@@ -189,10 +241,12 @@ button:focus-visible {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover; /* This will make the image cover the entire wrapper */
-  margin: 25px auto;
+  margin: 0 auto;
+  margin-top: -10%;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+  padding: 5%;
 }
 
 .playerHand{
@@ -203,6 +257,7 @@ button:focus-visible {
   margin: 0 auto;
   border-radius: 10px;
   color: white;
+
 }
 
 .playerStatus{
@@ -260,6 +315,10 @@ input[type="password"] {
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
+}
+
+.modal{
+  margin-top: 16%;
 }
 
 button {

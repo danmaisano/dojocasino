@@ -36,6 +36,7 @@ module.exports = {
               lastName: user.lastName,
               email: user.email,
               chips: user.chips,
+              token: userToken,
             });
           })
           .catch((err) => {
@@ -66,6 +67,11 @@ module.exports = {
 
   updateChips: (req, res) => {
     const playerId = req.body.id;
+
+    if (req.user.id !== playerId) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
     const newChips = req.body.chips;
 
     Player.findByIdAndUpdate(playerId, { chips: newChips }, { new: true })

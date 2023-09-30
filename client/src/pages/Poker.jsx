@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import HandValue from './HandValues';
+import PokerHandValue from '../components/PokerHandValues';
 import axios from "axios"
 import Cookies from 'js-cookie';
-import Leaderboard from './Leaderboard';
+import Leaderboard from '../components/Leaderboard';
 import { useNavigate } from "react-router-dom"
 
-const Table = (props) => {
-  const { deck, setDeck, hand, setHand, player, setPlayer} = props;
+const Poker = (props) => {
+  const { deck, setDeck, player, setPlayer} = props;
+  const [hand, setHand] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [playerHand, setPlayerHand] = useState([]);
   const [handDealt, setHandDealt] = useState(false);
@@ -18,8 +19,42 @@ const Table = (props) => {
 	const [previousBetAmount, setPreviousBetAmount] = useState(betAmount);
   const [gameStarted, setGameStarted] = useState(false)
   const navigate = useNavigate();
+  const userToken = JSON.parse(Cookies.get("userToken"));
 
-	
+  useEffect(() => {
+    const pokerSavedGameState = localStorage.getItem('pokerGameState');
+  
+    if (pokerSavedGameState) {
+      const parsedState = JSON.parse(pokerSavedGameState);
+      if(parsedState.hand && parsedState.betAmount) { // Safe check
+        setHand(parsedState.hand);
+        setBetAmount(parsedState.betAmount);
+        setGameStarted(true); 
+        setDrawn(true)
+      }
+    }
+  }, []);
+
+useEffect(() => {
+  const pokerGameState = {
+    hand,
+    betAmount,
+  };
+
+  localStorage.setItem('pokerGameState', JSON.stringify(pokerGameState));
+  
+}, [hand, betAmount]); 
+
+  const clearPokerGameState = () => {
+    localStorage.removeItem('pokerGameState');
+  };
+
+  useEffect(() => {
+    if (!drawn) {
+      clearPokerGameState();
+    }
+  }, [drawn]);
+  
   const dealNewHand = () => {
     let newHand = []
     let newRemainingDeck = [...deck]
@@ -52,6 +87,7 @@ const Table = (props) => {
     setHoldStates(Array(5).fill('hold'));
     setDrawn(true)
     setRemainingDeck(newRemainingDeck);
+
   }
   
   const drawCards = () => {
@@ -77,7 +113,6 @@ const Table = (props) => {
 		if(betAmount > player.chips) {
 			setBetAmount(player.chips);
 		}
-		
   }
   
   const dealCards = () => {
@@ -99,15 +134,15 @@ const Table = (props) => {
       return;
     }
     
-    const handValue = new HandValue(hand).getValue().handStrength;
+    const pokerHandValue = new PokerHandValue(hand).getValue().handStrength;
     if (!drawn) {
 			setPlayer(prevPlayer => ({
 				...prevPlayer, 
-        chips: prevPlayer.chips + (new HandValue(hand).getValue().chipValue * betAmount)
+        chips: prevPlayer.chips + (new PokerHandValue(hand).getValue().chipValue * betAmount)
       }));
 			
     }
-    setPlayerHand(handValue);
+    setPlayerHand(pokerHandValue);
     setHandDealt(false);
   }, [handDealt]);
   
@@ -140,15 +175,32 @@ const Table = (props) => {
       .catch((err) => res.json({message: "Something went wrong!", error: err}))
   }
   
+  const playBlackjack = () => {
+    if (drawn){
+      setPlayer({...player, chips: player.chips - betAmount});
+      navigate("/blackjack")
+    }
+      else{
+        navigate("/blackjack")
+      }
+  }
 
   useEffect(() => {
     if (player._id) {
       axios
-        .patch(`http://localhost:8000/api/player/update/${player._id}`, { id: player._id, chips: player.chips })
+        .patch(
+          `http://localhost:8000/api/player/update/${player._id}`,
+          { id: player._id, chips: player.chips },
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          }
+        )
         .then((res) => {
           const updatedPlayer = res.data;
           setPlayer(updatedPlayer);
-          Cookies.set("player", JSON.stringify(updatedPlayer), { expires: 30 }); 
+          Cookies.set("player", JSON.stringify(updatedPlayer), { expires: 30 });
         })
         .catch((err) => {
           err.response.data.errors ? setErrors(err.response.data.errors) : "";
@@ -188,7 +240,7 @@ const Table = (props) => {
     ) :
     (
       <div>
-        <div className="wrapper">
+        <div className="wrapper mt-5">
           <div className="card-container justify-content-center">
           {hand ? (
               hand.map((card, index) => (
@@ -223,18 +275,18 @@ const Table = (props) => {
           </div>
         </div>
         { 
-          !drawn 
-              ? new HandValue(hand).getValue().handStrength === "High Card" 
-                  ? <h4>You lost {previousBetAmount} chips with a High Card</h4> 
-                  : new HandValue(hand).getValue().handStrength === "Pair"
-                      ? <h4>You broke even with a pair</h4>
-                      : <h4>You won {new HandValue(hand).getValue().chipValue * previousBetAmount} chips with a {new HandValue(hand).getValue().handStrength}</h4>
+          !drawn
+              ? new PokerHandValue(hand).getValue().handStrength === "High Card" 
+                  ? <h4 className='mt-3'>You lost {previousBetAmount} chips with a High Card</h4> 
+                  : new PokerHandValue(hand).getValue().handStrength === "Pair"
+                      ? <h4 className='mt-3'>You broke even with a pair</h4>
+                      : <h4 className='mt-3'>You won {new PokerHandValue(hand).getValue().chipValue * previousBetAmount} chips with a {new PokerHandValue(hand).getValue().handStrength}</h4>
               : (
-                  new HandValue(hand).getValue().handStrength === "High Card" 
-                  ? <h4>Currently losing {previousBetAmount} chips</h4> 
-                  : new HandValue(hand).getValue().handStrength === "Pair"
-                      ? <h4>You are breaking even with a pair</h4>
-                      : <h4>Currently winning {new HandValue(hand).getValue().chipValue * previousBetAmount} chips with a {new HandValue(hand).getValue().handStrength}</h4>
+                  new PokerHandValue(hand).getValue().handStrength === "High Card" 
+                  ? <h4 className='mt-3'>Currently losing {previousBetAmount} chips</h4> 
+                  : new PokerHandValue(hand).getValue().handStrength === "Pair"
+                      ? <h4 className='mt-3'>You are breaking even with a pair</h4>
+                      : <h4 className='mt-3'>Currently winning {new PokerHandValue(hand).getValue().chipValue * previousBetAmount} chips with a {new PokerHandValue(hand).getValue().handStrength}</h4>
               )
         }
         <div className="playerStatus bg-dark text-white d-flex justify-content-around align-items-center mt-4 p-3">
@@ -265,25 +317,34 @@ const Table = (props) => {
 							{errorMessage && <div className="text-danger">{errorMessage}</div>}
 					</div>
 					<div className='text-light'>
-            <div>
-              {player.chips <= 0 ? (
-                <div>
-                  <h4 className='mb-0'>Click here to reload:</h4>
-                  <button className="btn btn-primary mt-2" onClick={handleReload}>Reload</button>
-                </div>
-              ) : (
-                  <h3 className='currentChips'>Current Chips: {player.chips}</h3>
-              )}
-            </div>
+          <div>
+            {player.chips <= 0 ? (
+              <div>
+                <h4 className='mb-0'>Click here to reload:</h4>
+                <button className="btn btn-primary mt-2" onClick={handleReload}>Reload</button>
+              </div>
+            ) : (
+              <h3 className='currentChips'>Current Chips: {player.chips}</h3>
+            )}
+          </div>
+          <div className="button-container">
+          <button 
+            className="btn btn-outline-primary logoutButton mt-4" 
+            onClick={playBlackjack}
+            disabled={drawn}
+          >
+            Blackjack
+          </button>
             <button className="btn btn-outline-warning logoutButton mt-4" onClick={logoutHandler}>
               Log Out
             </button>
           </div>
         </div>
+        </div>
       </div>
     )}
-    <Leaderboard/>
+    {/* <Leaderboard/> */}
   </div>
 )};
 
-export default Table;
+export default Poker;
