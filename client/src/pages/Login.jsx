@@ -30,7 +30,7 @@ const Login = (props) => {
 
   return (
     <div>
-      <h2>Login to Dojo Poker</h2>
+      <h2 className='text-light'>Login to Dojo Poker</h2>
       <div className="login-container">
         <form onSubmit={handleLogin}>
           <div className="form-group">

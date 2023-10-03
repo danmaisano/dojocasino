@@ -9,8 +9,10 @@ const Home = (props) => {
   const handleLogout = () => {
     setPlayer(null);
     Cookies.remove("player");
+    localStorage.clear()
     navigate("/");
   };
+
 
   return (
     <div className="login-container">
@@ -41,7 +43,7 @@ const Home = (props) => {
           <div className="mt-3 float-end">
             <button 
               type="button" 
-              className="btn btn-danger"
+              className="btn btn-danger float-end"
               onClick={handleLogout}
             >
               Logout

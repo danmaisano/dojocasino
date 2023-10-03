@@ -13,6 +13,7 @@ function App() {
   const [originalDeck, setOriginalDeck] = useState([]);
   const [deck, setDeck] = useState([]);
   const [player, setPlayer] = useState({});
+  const [fromPoker, setFromPoker] = useState(true)
 
   useEffect(() => {
     axios.get("http://localhost:8000/api/deck")
@@ -38,8 +39,8 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/poker" element={<Poker deck={deck} setDeck={setDeck} player={player} setPlayer={setPlayer} />} />
-          <Route path="/blackjack" element={<Blackjack deck={deck} setDeck={setDeck} originalDeck={originalDeck} setOriginalDeck={setOriginalDeck} player={player} setPlayer={setPlayer} refreshDeck={refreshDeck}/>} />
+          <Route path="/poker" element={<Poker deck={deck} setDeck={setDeck} player={player} setPlayer={setPlayer} fromPoker={fromPoker} setFromPoker={setFromPoker}/>} />
+          <Route path="/blackjack" element={<Blackjack deck={deck} setDeck={setDeck} originalDeck={originalDeck} setOriginalDeck={setOriginalDeck} player={player} setPlayer={setPlayer} refreshDeck={refreshDeck} fromPoker={fromPoker} setFromPoker={setFromPoker}/>} />
           <Route path="/home" element={<Home deck={deck} setDeck={setDeck} player={player} setPlayer={setPlayer} />} />
           <Route path="/" element={<Login deck={deck} setDeck={setDeck} player={player} setPlayer={setPlayer} />} />
           <Route path="/register" element={<Register deck={deck} setDeck={setDeck} player={player} setPlayer={setPlayer} />} />

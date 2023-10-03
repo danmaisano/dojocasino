@@ -6,7 +6,7 @@ import Leaderboard from '../components/Leaderboard';
 import { useNavigate } from "react-router-dom"
 
 const Poker = (props) => {
-  const { deck, setDeck, player, setPlayer} = props;
+  const { deck, setDeck, player, setPlayer, setFromPoker} = props;
   const [hand, setHand] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [playerHand, setPlayerHand] = useState([]);
@@ -54,7 +54,7 @@ useEffect(() => {
       clearPokerGameState();
     }
   }, [drawn]);
-  
+
   const dealNewHand = () => {
     let newHand = []
     let newRemainingDeck = [...deck]
@@ -168,20 +168,19 @@ useEffect(() => {
     }
   };
 
-  const logoutHandler = () =>{
-    axios
-    .post("http://localhost:8000/api/player/logout")
-      .then (navigate("/"))
-      .catch((err) => res.json({message: "Something went wrong!", error: err}))
+  const goHome = () => {
+    navigate("/home")
   }
   
   const playBlackjack = () => {
     if (drawn){
       setPlayer({...player, chips: player.chips - betAmount});
       navigate("/blackjack")
+      setFromPoker(true)
     }
       else{
         navigate("/blackjack")
+        setFromPoker(true)
       }
   }
 
@@ -214,7 +213,7 @@ useEffect(() => {
     {!gameStarted ? (
       <div className="wrapper d-flex">
         <div className="loginBox">
-          <h2>Welcome {player.firstName}!</h2>
+          <h2>Welcome to Dojo Poker, {player.firstName}!</h2>
           <h3>You currently have {player.chips} chips</h3>
           <h4 className="mt-3">Bet Amount:</h4>
 							<input
@@ -229,12 +228,14 @@ useEffect(() => {
 								disabled={drawn}
 							/>
           <button className="dealButton btn btn-outline-dark mt-4 fw-bold" onClick={dealCards} style={{width: '200px'}}> Shuffle Up and Deal! </button>
-          <div className="logout-container">
-            <h5 className='mx-3 mt-5'>Not {player.firstName}?</h5>
-            <button className="btn btn-warning mx-3 mt-5 welcomeLogoutButton" onClick={logoutHandler}>
-              Log Out
-            </button>
-          </div>
+          <div className="logout-container justify-content-center d-flex">
+              <button className="btn btn-primary mt-4 mx-auto" onClick={playBlackjack}>
+                Blackjack
+              </button>
+              <button className="btn btn-warning mt-4 mx-auto" onClick={goHome}>
+                Go Home
+              </button>
+            </div>
         </div>
       </div>
     ) :
@@ -277,16 +278,16 @@ useEffect(() => {
         { 
           !drawn
               ? new PokerHandValue(hand).getValue().handStrength === "High Card" 
-                  ? <h4 className='mt-3'>You lost {previousBetAmount} chips with a High Card</h4> 
+                  ? <h4 className='mt-3 text-light set-abs'>You lost {previousBetAmount} chips with a High Card</h4> 
                   : new PokerHandValue(hand).getValue().handStrength === "Pair"
-                      ? <h4 className='mt-3'>You broke even with a pair</h4>
-                      : <h4 className='mt-3'>You won {new PokerHandValue(hand).getValue().chipValue * previousBetAmount} chips with a {new PokerHandValue(hand).getValue().handStrength}</h4>
+                      ? <h4 className='mt-3 text-light set-abs'>You broke even with a pair</h4>
+                      : <h4 className='mt-3 text-light set-abs'>You won {new PokerHandValue(hand).getValue().chipValue * previousBetAmount} chips with a {new PokerHandValue(hand).getValue().handStrength}</h4>
               : (
                   new PokerHandValue(hand).getValue().handStrength === "High Card" 
-                  ? <h4 className='mt-3'>Currently losing {previousBetAmount} chips</h4> 
+                  ? <h4 className='mt-3 text-light set-abs'>Currently losing {previousBetAmount} chips</h4> 
                   : new PokerHandValue(hand).getValue().handStrength === "Pair"
-                      ? <h4 className='mt-3'>You are breaking even with a pair</h4>
-                      : <h4 className='mt-3'>Currently winning {new PokerHandValue(hand).getValue().chipValue * previousBetAmount} chips with a {new PokerHandValue(hand).getValue().handStrength}</h4>
+                      ? <h4 className='mt-3 text-light set-abs'>You are breaking even with a pair</h4>
+                      : <h4 className='mt-3 text-light set-abs'>Currently winning {new PokerHandValue(hand).getValue().chipValue * previousBetAmount} chips with a {new PokerHandValue(hand).getValue().handStrength}</h4>
               )
         }
         <div className="playerStatus bg-dark text-white d-flex justify-content-around align-items-center mt-4 p-3">
@@ -335,8 +336,8 @@ useEffect(() => {
           >
             Blackjack
           </button>
-            <button className="btn btn-outline-warning logoutButton mt-4" onClick={logoutHandler}>
-              Log Out
+            <button className="btn btn-outline-warning logoutButton mt-4" onClick={goHome}>
+              Go Home
             </button>
           </div>
         </div>

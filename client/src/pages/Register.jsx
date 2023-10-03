@@ -13,16 +13,21 @@ const Register = (props) => {
   const navigate = useNavigate();
   const { player, setPlayer } = props;
 
-  const handleLoginAfterRegister = (email, password) => {
-    axios
-      .post('http://localhost:8000/api/player/login', { email, password })
+  const handleLoginAfterRegister = (e) => {
+    e.preventDefault();
+    axios.post("http://localhost:8000/api/player/login", { email, password })
       .then((res) => {
         setPlayer(res.data);
-        Cookies.set('player', JSON.stringify(res.data), { expires: 7 });
-        navigate('/play');
+        Cookies.set("player", JSON.stringify(res.data), { expires: 30 });
+        Cookies.set("userToken", JSON.stringify(res.data.token), { expires: 30 }); 
+        navigate("/home");
       })
       .catch((err) => {
-        console.log('Login Error:', err);
+        if (err.response && err.response.data && err.response.data.errors) {
+          setErrors(err.response.data.errors);
+        } else {
+          setErrors({ general: "Invalid Credentials" });
+        }
       });
   };
 
@@ -46,10 +51,10 @@ const Register = (props) => {
       .then((res) => {
         setErrors({});
         setPlayer(newPlayer);
-        navigate('/play');
+        navigate('/home');
         Cookies.set('newPlayer', JSON.stringify(res.data), { expires: 30 });
 
-        handleLoginAfterRegister(email, password);
+        handleLoginAfterRegister(e);
       })
       .catch((err) => {
         if (err.response && err.response.data && err.response.data.errors) {
