@@ -20,14 +20,17 @@
     const [splitAvailable, setSplitAvailable] = useState(false);
     const [splitActive, setSplitActive] = useState(false)
     const navigate = useNavigate();
-    const userToken = JSON.parse(Cookies.get("userToken"));
+    const token = Cookies.get("userToken");
+    const userToken = token ? JSON.parse(token) : null;
+
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    useEffect (() => {
-      if(!player){
-        navigate("/")
+    useEffect(() => {
+      if (!player || !userToken) {
+        navigate("/");
       }
-    }, []);
+    }, [player, userToken]);
+    
 
     useEffect(() => {
       const blackjackSavedGameState = localStorage.getItem('blackjackGameState');

@@ -1,23 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 const Home = (props) => {
   const { player, setPlayer } = props;
   const navigate = useNavigate();
-
+  const token = Cookies.get("userToken");
+  const userToken = token ? JSON.parse(token) : null;
+  
+  useEffect(() => {
+    if (!player || !userToken) {
+      navigate("/");
+    }
+  }, [player, userToken]);
+  
   const handleLogout = () => {
     setPlayer(null);
     Cookies.remove("player");
     localStorage.clear()
     navigate("/");
   };
-
-  useEffect (() => {
-    if(!player){
-      navigate("/")
-    }
-  }, []);
+  
 
 
   return (

@@ -19,13 +19,14 @@ const Poker = (props) => {
 	const [previousBetAmount, setPreviousBetAmount] = useState(betAmount);
   const [gameStarted, setGameStarted] = useState(false)
   const navigate = useNavigate();
-  const userToken = JSON.parse(Cookies.get("userToken"));
+  const token = Cookies.get("userToken");
+  const userToken = token ? JSON.parse(token) : null;
 
-  useEffect (() => {
-    if(!player){
-      navigate("/")
+  useEffect(() => {
+    if (!player || !userToken) {
+      navigate("/");
     }
-  }, []);
+  }, [player, userToken]);
 
   useEffect(() => {
     const pokerSavedGameState = localStorage.getItem('pokerGameState');
