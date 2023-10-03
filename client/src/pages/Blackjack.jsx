@@ -62,6 +62,7 @@
 
       };
 
+
       localStorage.setItem('blackjackGameState', JSON.stringify(blackjackGameState));
     }, [player.chips, playerHand, dealerHand, betAmount, player]); 
 
@@ -164,6 +165,8 @@
 
 
     const stand = async () => {
+      setFromPoker(false)
+
       const getRandomCard = (deck) => {
         const randomIndex = Math.floor(Math.random() * deck.length);
         return deck.splice(randomIndex, 1)[0];
