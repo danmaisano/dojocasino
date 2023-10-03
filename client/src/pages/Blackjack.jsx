@@ -23,6 +23,12 @@
     const userToken = JSON.parse(Cookies.get("userToken"));
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+    useEffect (() => {
+      if(!player){
+        navigate("/")
+      }
+    }, []);
+
     useEffect(() => {
       const blackjackSavedGameState = localStorage.getItem('blackjackGameState');
 

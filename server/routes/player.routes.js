@@ -11,6 +11,10 @@ module.exports = (app) => {
     PlayerController.updateChips
   );
   app.get("/api/players/getAllPlayers", PlayerController.getAllPlayers);
-  app.delete("/api/players/delete/:id", PlayerController.deletePlayer);
+  app.delete(
+    "/api/players/delete/:id",
+    authenticateToken,
+    PlayerController.deletePlayer
+  );
   app.get("/api/players/leaders", PlayerController.getLeaders);
 };

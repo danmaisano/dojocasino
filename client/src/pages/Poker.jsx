@@ -21,6 +21,12 @@ const Poker = (props) => {
   const navigate = useNavigate();
   const userToken = JSON.parse(Cookies.get("userToken"));
 
+  useEffect (() => {
+    if(!player){
+      navigate("/")
+    }
+  }, []);
+
   useEffect(() => {
     const pokerSavedGameState = localStorage.getItem('pokerGameState');
   

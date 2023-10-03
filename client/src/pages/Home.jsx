@@ -13,6 +13,12 @@ const Home = (props) => {
     navigate("/");
   };
 
+  useEffect (() => {
+    if(!player){
+      navigate("/")
+    }
+  }, []);
+
 
   return (
     <div className="login-container">
